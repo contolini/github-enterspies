@@ -18,62 +18,63 @@ The API mimics that of [GitHub.js](https://github.com/michael/github) but no aut
 
 Change the name that is listed on the user's profile page.
 
-````
+```
 GHE.user.setName('Brian Carroll');
-````
+```
 
 Change the user's public email address.
 
-````
+```
 GHE.user.setEmail('sup@whatevs.com');
+```
 
 Change the user's location.
 
-````
+```
 GHE.user.setLocation('Baltimore');
-````
+```
 
 Change the user's website.
 
-````
+```
 GHE.user.setWebsite('http://whatevs.com');
-````
+```
 
 Change the user's Gravatar email. This will change their profile photo.
 
-````
+```
 GHE.user.setGravatar('someothergravataremailaddress@whatevs.com');
-````
+```
 
 ### Repository methods
 
 Create a new GitHub issue at the specified repository. Provide a title for the issue and some markdown.
 
-````
+```
 GHE.repo('contolini/awesome-repo').createIssue({
   title: 'CSRF party',
   body: 'Creating issues without permission sure is **fun**!'
 });
-````
+```
 
 Post a new comment to a repo's specified issue. Provide the issue's number and some markdown.
 
-````
+```
 GHE.repo('contolini/awesome-repo').postComment({
   issueNum: 28,
   body: 'I would just like to say that this issue is da best.'
 });
-````
+```
 
-**More to come!**
+*More to come!*
 
 ### Misc. methods
 
 If you just want their CSRF token.
 
-````
+```
 GHE.fetchToken();
-````
+```
 
 ## Contributing
 
