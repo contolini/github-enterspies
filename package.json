@@ -1,5 +1,5 @@
 {
-  "name": "ghe-api",
+  "name": "github-enterspies",
   "version": "0.1.0",
   "description": "A GitHub Enterprise CSRF library",
   "main": "ghe.js",
@@ -14,7 +14,7 @@
     "csrf"
   ],
   "author": "Chris Contolini",
-  "license": "MIT",
+  "license": "CC0",
   "bugs": {
     "url": "https://github.com/contolini/github-enterspies/issues"
   },
