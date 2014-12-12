@@ -1,0 +1,34 @@
+{
+  "name": "ghe-api",
+  "version": "0.1.0",
+  "description": "A GitHub Enterprise CSRF library",
+  "main": "ghe.js",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:contolini/github-enterspies.git"
+  },
+  "keywords": [
+    "github",
+    "enterprise",
+    "api",
+    "csrf"
+  ],
+  "author": "Chris Contolini",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/contolini/github-enterspies/issues"
+  },
+  "scripts": {
+    "browser": "browserify src/index.js -s GHE -o dist/ghe.js && uglifyjs dist/ghe.js -o dist/ghe.min.js",
+    "test": "mocha test/tests.js"
+  },
+  "dependencies": {
+    "es6-promise": "~2.0.1",
+    "browser-get": "~0.1.1"
+  },
+  "devDependencies": {
+    "sinon-chai": "~2.6.0",
+    "chai": "~1.10.0",
+    "sinon": "~1.12.1"
+  }
+}
