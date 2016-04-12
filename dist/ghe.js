@@ -1,4 +1,97 @@
-!function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.GHE=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.GHE = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+// shim for using process in browser
+
+var process = module.exports = {};
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = setTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    clearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        setTimeout(drainQueue, 0);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
+
+},{}],2:[function(require,module,exports){
 /*
  * browser-get
  * http://github.com/contolini/browser-get
@@ -9,7 +102,7 @@
 
 'use strict';
 
-var Promise = _dereq_('es6-promise').Promise;
+var Promise = require('es6-promise').Promise;
 
 var get = function( url ) {
 
@@ -35,18 +128,18 @@ var get = function( url ) {
 };
 
 module.exports = get;
-},{"es6-promise":2}],2:[function(_dereq_,module,exports){
+},{"es6-promise":3}],3:[function(require,module,exports){
 "use strict";
-var Promise = _dereq_("./promise/promise").Promise;
-var polyfill = _dereq_("./promise/polyfill").polyfill;
+var Promise = require("./promise/promise").Promise;
+var polyfill = require("./promise/polyfill").polyfill;
 exports.Promise = Promise;
 exports.polyfill = polyfill;
-},{"./promise/polyfill":6,"./promise/promise":7}],3:[function(_dereq_,module,exports){
+},{"./promise/polyfill":7,"./promise/promise":8}],4:[function(require,module,exports){
 "use strict";
 /* global toString */
 
-var isArray = _dereq_("./utils").isArray;
-var isFunction = _dereq_("./utils").isFunction;
+var isArray = require("./utils").isArray;
+var isFunction = require("./utils").isFunction;
 
 /**
   Returns a promise that is fulfilled when all the given promises have been
@@ -135,7 +228,7 @@ function all(promises) {
 }
 
 exports.all = all;
-},{"./utils":11}],4:[function(_dereq_,module,exports){
+},{"./utils":12}],5:[function(require,module,exports){
 (function (process,global){
 "use strict";
 var browserGlobal = (typeof window !== 'undefined') ? window : {};
@@ -198,8 +291,8 @@ function asap(callback, arg) {
 }
 
 exports.asap = asap;
-}).call(this,_dereq_("/Users/contolinic/local/share/npm/lib/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"/Users/contolinic/local/share/npm/lib/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js":14}],5:[function(_dereq_,module,exports){
+}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"_process":1}],6:[function(require,module,exports){
 "use strict";
 var config = {
   instrument: false
@@ -215,12 +308,12 @@ function configure(name, value) {
 
 exports.config = config;
 exports.configure = configure;
-},{}],6:[function(_dereq_,module,exports){
+},{}],7:[function(require,module,exports){
 (function (global){
 "use strict";
 /*global self*/
-var RSVPPromise = _dereq_("./promise").Promise;
-var isFunction = _dereq_("./utils").isFunction;
+var RSVPPromise = require("./promise").Promise;
+var isFunction = require("./utils").isFunction;
 
 function polyfill() {
   var local;
@@ -255,19 +348,19 @@ function polyfill() {
 }
 
 exports.polyfill = polyfill;
-}).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./promise":7,"./utils":11}],7:[function(_dereq_,module,exports){
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./promise":8,"./utils":12}],8:[function(require,module,exports){
 "use strict";
-var config = _dereq_("./config").config;
-var configure = _dereq_("./config").configure;
-var objectOrFunction = _dereq_("./utils").objectOrFunction;
-var isFunction = _dereq_("./utils").isFunction;
-var now = _dereq_("./utils").now;
-var all = _dereq_("./all").all;
-var race = _dereq_("./race").race;
-var staticResolve = _dereq_("./resolve").resolve;
-var staticReject = _dereq_("./reject").reject;
-var asap = _dereq_("./asap").asap;
+var config = require("./config").config;
+var configure = require("./config").configure;
+var objectOrFunction = require("./utils").objectOrFunction;
+var isFunction = require("./utils").isFunction;
+var now = require("./utils").now;
+var all = require("./all").all;
+var race = require("./race").race;
+var staticResolve = require("./resolve").resolve;
+var staticReject = require("./reject").reject;
+var asap = require("./asap").asap;
 
 var counter = 0;
 
@@ -468,10 +561,10 @@ function publishRejection(promise) {
 }
 
 exports.Promise = Promise;
-},{"./all":3,"./asap":4,"./config":5,"./race":8,"./reject":9,"./resolve":10,"./utils":11}],8:[function(_dereq_,module,exports){
+},{"./all":4,"./asap":5,"./config":6,"./race":9,"./reject":10,"./resolve":11,"./utils":12}],9:[function(require,module,exports){
 "use strict";
 /* global toString */
-var isArray = _dereq_("./utils").isArray;
+var isArray = require("./utils").isArray;
 
 /**
   `RSVP.race` allows you to watch a series of promises and act as soon as the
@@ -558,7 +651,7 @@ function race(promises) {
 }
 
 exports.race = race;
-},{"./utils":11}],9:[function(_dereq_,module,exports){
+},{"./utils":12}],10:[function(require,module,exports){
 "use strict";
 /**
   `RSVP.reject` returns a promise that will become rejected with the passed
@@ -606,7 +699,7 @@ function reject(reason) {
 }
 
 exports.reject = reject;
-},{}],10:[function(_dereq_,module,exports){
+},{}],11:[function(require,module,exports){
 "use strict";
 function resolve(value) {
   /*jshint validthis:true */
@@ -622,7 +715,7 @@ function resolve(value) {
 }
 
 exports.resolve = resolve;
-},{}],11:[function(_dereq_,module,exports){
+},{}],12:[function(require,module,exports){
 "use strict";
 function objectOrFunction(x) {
   return isFunction(x) || (typeof x === "object" && x !== null);
@@ -645,7 +738,7 @@ exports.objectOrFunction = objectOrFunction;
 exports.isFunction = isFunction;
 exports.isArray = isArray;
 exports.now = now;
-},{}],12:[function(_dereq_,module,exports){
+},{}],13:[function(require,module,exports){
 (function (process,global){
 /*!
  * @overview es6-promise - a tiny implementation of Promises/A+.
@@ -1607,10 +1700,10 @@ exports.now = now;
       this['ES6Promise'] = es6$promise$umd$$ES6Promise;
     }
 }).call(this);
-}).call(this,_dereq_("/Users/contolinic/local/share/npm/lib/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"/Users/contolinic/local/share/npm/lib/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js":14}],13:[function(_dereq_,module,exports){
-var Promise = _dereq_('es6-promise').Promise,
-    get = _dereq_('browser-get'),
+}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"_process":1}],14:[function(require,module,exports){
+var Promise = require('es6-promise').Promise,
+    get = require('browser-get'),
     GHE = {};
 
 // Scrape a totally random GHE page to determine if they're using GHE.
@@ -1619,7 +1712,7 @@ var _init = get('/settings/repositories');
 // If the scrape is successful, save the user's credentials.
 _init.then(function( html ) {
   GHE.credentials = {
-    username: html.match(/a href="\/(.+)" class="name">/)[1],
+    username: html.match(/alt="@(.+)" class="avatar"/)[1],
     csrf: html.match(/meta content="(.+=)" name="csrf\-token"/)[1]
   };
 });
@@ -1784,68 +1877,6 @@ function _post( endpoint, data, location, cb ) {
 }
 
 module.exports = GHE;
-},{"browser-get":1,"es6-promise":12}],14:[function(_dereq_,module,exports){
-// shim for using process in browser
 
-var process = module.exports = {};
-
-process.nextTick = (function () {
-    var canSetImmediate = typeof window !== 'undefined'
-    && window.setImmediate;
-    var canPost = typeof window !== 'undefined'
-    && window.postMessage && window.addEventListener
-    ;
-
-    if (canSetImmediate) {
-        return function (f) { return window.setImmediate(f) };
-    }
-
-    if (canPost) {
-        var queue = [];
-        window.addEventListener('message', function (ev) {
-            var source = ev.source;
-            if ((source === window || source === null) && ev.data === 'process-tick') {
-                ev.stopPropagation();
-                if (queue.length > 0) {
-                    var fn = queue.shift();
-                    fn();
-                }
-            }
-        }, true);
-
-        return function nextTick(fn) {
-            queue.push(fn);
-            window.postMessage('process-tick', '*');
-        };
-    }
-
-    return function nextTick(fn) {
-        setTimeout(fn, 0);
-    };
-})();
-
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-
-function noop() {}
-
-process.on = noop;
-process.once = noop;
-process.off = noop;
-process.emit = noop;
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-}
-
-// TODO(shtylman)
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-
-},{}]},{},[13])
-(13)
+},{"browser-get":2,"es6-promise":13}]},{},[14])(14)
 });
