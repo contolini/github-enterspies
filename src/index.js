@@ -8,7 +8,7 @@ var _init = get('/settings/repositories');
 // If the scrape is successful, save the user's credentials.
 _init.then(function( html ) {
   GHE.credentials = {
-    username: html.match(/a href="\/(.+)" class="name">/)[1],
+    username: html.match(/alt="@(.+)" class="avatar"/)[1],
     csrf: html.match(/meta content="(.+=)" name="csrf\-token"/)[1]
   };
 });
